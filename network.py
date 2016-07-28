@@ -8,13 +8,25 @@ from keras.optimizers import SGD
 from keras.utils import np_utils
 from fuel.datasets.hdf5 import H5PYDataset
 import h5py
-
+from fuel.schemes import SequentialScheme
+from fuel.streams import DataStream
+from fuel.transformers import ForceFloatX
 
 train_vectors = H5PYDataset('glove.hdf5', which_sets = ('train',), load_in_memory = True)
 print(train_vectors.num_examples)
 
+scheme = SequentialScheme(train_vectors.num_examples, 5)
+print(scheme)
 
+stream = DataStream(train_vectors, iteration_scheme = scheme)
+print(stream.get_epoch_iterator())
 
+count = 0
+for data in stream.get_epoch_iterator():
+    if count == 1:
+        break
+    count += 1
+    print(data)
 
 data = train_vectors.data_sources
 print(type(data))
